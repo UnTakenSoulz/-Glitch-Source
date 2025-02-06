@@ -1,0 +1,61 @@
+{
+    "format_version": 2,
+    "metadata": {
+        "authors": [ "bluemods.lol" ],
+        "license": "AGPLv3",
+        "url": "https://example.com",
+        "version": [
+            1,
+            0,
+            0
+        ]
+    },
+    "header": {
+        "name": "Glitch PvP BPack",
+        "description": "Made by @UnTakenSoulz",
+        "uuid": "1a5f8caf-b7ba-4a97-b504-34305808c80d",
+        "version": [
+            1,
+            0,
+            0
+        ],
+        "min_engine_version": [ 
+            1,
+            21,
+            50
+        ]
+    },
+    "modules": [
+        {
+            "type": "data",
+            "uuid": "bfec96d5-9104-4cf4-b09a-f661df9769e3",
+            "version": [
+                2,
+                2,
+                0
+            ]
+        },
+        {
+            "description": "BP",
+            "language": "javascript",
+            "type": "script",
+            "uuid": "31a311fa-fe33-4461-b834-d6c4c6c090fb",
+            "version": [
+                2,
+                2,
+                0
+            ],
+            "entry": "scripts/bluemods.js"
+        }
+    ],
+        "dependencies": [
+        {
+            "module_name": "@minecraft/server",
+            "version": "1.17.0-beta"
+        },
+        {
+            "module_name": "@minecraft/server-ui",
+            "version": "1.4.0-beta"
+        }
+    ]
+}
