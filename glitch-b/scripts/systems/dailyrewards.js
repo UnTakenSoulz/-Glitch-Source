@@ -72,7 +72,7 @@ function addItems(player, items) {
                     const enchantComp = itemStack.getComponent(
                         "minecraft:enchantments"
                     ).enchantments;
-                    for (const enchant of enachnts)
+                    for (const enchant of enchants)
                         enchantComp.addEnchantment(enchant);
                     itemStack.getComponent("minecraft:enchantments").enchantments =
                         enchantComp;
