@@ -2,50 +2,75 @@ import { Player, Entity, world, ScoreboardIdentityType, ScoreboardIdentity, Scor
 
 /**
  * Get all scoreboard scores from a player or entity.
- * Does not support fake player.
+ * Does not support fake players.
  * @param {Player | Entity} target
  * @return {object}
  */
-export function getScores (target) {
-  let objectives = world.scoreboard.getObjectives();
-  let targetScoreboard = {};
+export function getScores(target) {
+    const objectives = world.scoreboard.getObjectives();
+    const targetScoreboard = {};
 
-  if (!(target.scoreboardIdentity instanceof ScoreboardIdentity)) return targetScoreboard;
-  for (const objective of objectives) targetScoreboard[objective.id] = objective.getScores().find((score) => score.participant.type !== ScoreboardIdentityType.FakePlayer ? score.participant.getEntity() === target : false)?.score;
-  return targetScoreboard;
-};
+    // Check if the target has a valid scoreboard identity
+    if (!(target.scoreboardIdentity instanceof ScoreboardIdentity)) {
+        return targetScoreboard;
+    }
+
+    // Iterate through all objectives and find the target's scores
+    for (const objective of objectives) {
+        const scores = objective.getScores();
+        const score = scores.find((score) => {
+            if (score.participant.type !== ScoreboardIdentityType.FakePlayer) {
+                const entity = score.participant.getEntity();
+                return entity && entity.id === target.id;
+            }
+            return false;
+        });
+        targetScoreboard[objective.id] = score?.score || 0;
+    }
+
+    return targetScoreboard;
+}
 
 /**
- * Get scoreboard scores from a player or entity.
- * Does not support fake player.
+ * Get a specific scoreboard score from a player or entity.
+ * Does not support fake players.
  * @param {Player | Entity} target 
  * @param {string} objectiveId 
  * @return {number}
  */
-export function getScore (target, objectiveId) {
-  let objective = world.scoreboard.getObjective(objectiveId);
+export function getScore(target, objectiveId) {
+    const objective = world.scoreboard.getObjective(objectiveId);
 
-  if (!(target.scoreboardIdentity instanceof ScoreboardIdentity)) return;
-  if (!(objective instanceof ScoreboardObjective)) return;
+    // Check if the target has a valid scoreboard identity and the objective exists
+    if (!(target.scoreboardIdentity instanceof ScoreboardIdentity)) {
+        return 0;
+    }
+    if (!(objective instanceof ScoreboardObjective)) {
+        return 0;
+    }
 
-  try {
-    return objective.getScore(target.scoreboardIdentity);
-  } catch (err) {
-    console.error(err);
-  };
-};
+    try {
+        return objective.getScore(target.scoreboardIdentity);
+    } catch (err) {
+        console.error(err);
+        return 0;
+    }
+}
 
-function formatNumbers(num) {
+/**
+ * Format large numbers into a more readable format (e.g., 1K, 1M, 1B).
+ * @param {number} num 
+ * @return {string}
+ */
+export function formatNumbers(num) {
     if (num >= 1000000000) {
-      return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B'; // Billion
+        return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B'; // Billion
     }
     if (num >= 1000000) {
-      return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M'; // Million
+        return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M'; // Million
     }
     if (num >= 1000) {
-      return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K'; // Thousand
+        return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K'; // Thousand
     }
     return num.toString();
-  };
-   
-  
+}
