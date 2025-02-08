@@ -8,6 +8,7 @@ Command.register({
     aliases: [],   
     // <- (remove if the command is for admin) | permission: (player) => player.hasTag(main.adminTag),
 }, async (data) => {
+    // Start Editing Here
     player.sendMessage(`Successfully Executed`);
     player.runCommandAsync(`playsound random.levelup`);
 });
