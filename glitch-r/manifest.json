@@ -1,0 +1,29 @@
+{
+    "format_version": 2,
+    "header": {
+        "name": "Glitch PvP RPack",
+        "description": "Made by @UnTakenSoulz",
+        "min_engine_version": [
+            1,
+            21,
+            50
+        ],
+        "uuid": "eb8d786a-f440-484b-ac32-8d0903796c3d",
+        "version": [
+            1,
+            0,
+            0
+        ]
+    },
+    "modules": [
+        {
+            "type": "resources",
+            "uuid": "b3648594-93d3-484c-813c-f327ca6f0372",
+            "version": [
+                1,
+                0,
+                0
+            ]
+        }
+    ]
+}
