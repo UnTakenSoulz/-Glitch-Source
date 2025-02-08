@@ -8,3 +8,5 @@ import "./systems/kill.js";
 import "./systems/scoreboard.js";
 import "./systems/sellpad.js";
 import "./systems/starterkit.js";
+
+import "./commands/main.js";
