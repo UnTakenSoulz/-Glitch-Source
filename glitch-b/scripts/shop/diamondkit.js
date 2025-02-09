@@ -1,4 +1,4 @@
-import { world, system, ItemStack, ItemTypes, EquipmentSlot, ScoreboardIdentiy } from "@minecraft/server";
+import { world, system, ItemStack, ItemTypes, EquipmentSlot, ScoreboardIdentity } from "@minecraft/server";
 
 // All rights reserved @bluemods.lol - discord account. || Please report any bugs or glitches in our Discord server https://dsc.gg/bluemods
 
