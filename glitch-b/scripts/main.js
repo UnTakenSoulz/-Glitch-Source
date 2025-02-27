@@ -8,7 +8,7 @@ import "./systems/kill.js";
 import "./systems/scoreboard.js";
 import "./systems/sellpad.js";
 import "./systems/starterkit.js";
-import "systems/playerCompass.js";
+import "./systems/playerCompass.js";
 
 import "./shop/diamondkit.js";
 
