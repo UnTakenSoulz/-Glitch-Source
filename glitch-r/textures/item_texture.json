@@ -1,0 +1,24 @@
+{
+    "resource_pack_name": "glitch_textures",
+    "texture_name": "atlas.items",
+    "texture_data": {
+        "floating_text": {
+            "textures": "textures/items/floating_text"
+        },
+        "glitch": {
+            "textures": "textures/items/glitch"
+        },
+        "common_key": {
+            "textures": "textures/items/common_key"
+        },
+        "epic_key": {
+			"textures": "textures/items/epic_key"
+		},
+		"rare_key": {
+			"textures": "textures/items/rare_key"
+		},
+		"legendary_key": {
+			"textures": "textures/items/legendary_key"
+		}
+    }
+}
