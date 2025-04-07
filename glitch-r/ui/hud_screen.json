@@ -35,7 +35,7 @@
                 "type": "image",
                 "size": [100, 100],
                 "alpha": 1,
-                "offset": [-16.5, -90], // change this to move the logo
+                "offset": [-20, -72.5], // change this to move the logo
                 "anchor_from": "right_middle",
                 "anchor_to": "right_middle",
                 "texture": "textures/ui/logo"
@@ -83,4 +83,4 @@
     "to": 0,
     "destroy_at_end": "hud_actionbar_text"
   }
-      }
+}
