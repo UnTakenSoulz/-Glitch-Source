@@ -1,86 +1,40 @@
-import { Player, system, world, ItemStack, Enchantment } from '@minecraft/server';
-import { MessageFormData } from '@minecraft/server-ui'
-world.beforeEvents.playerInteractWithEntity.subscribe((data) => (data.target.typeId === 'minecraft:cow') ? system.run(() => mainform(data.player)) : null)
+import { world, system } from "@minecraft/server";
 
-// Daily reward items configuration
-const rewardItems = [
-    ['minecraft:diamond', 1],
-    ['minecraft:diamond_sword', 1, [new Enchantment('mending')]]
-];
-/**
- * 
- * @param {Player} player 
- * @returns 
- */
-function mainform(player) {
-    const playerdata = player.getDynamicProperty('rewards') ? JSON.parse(player.getDynamicProperty('rewards')) : null
-    if (player.getDynamicProperty('rewards') && !hasTimerReachedEnd(playerdata.targetDate)) {
-        const time = getTime(playerdata);
-        return player.sendMessage(`§c<System>§7: Time left §aHours§7: ${time.hours}, §aMinutes§7: ${time.minutes}, §aSeconds§7: ${time.seconds}`);
-    }
-    new MessageFormData()
-        .title('§cDaily §6Rewards')
-        .body('§aWelcome to daily rewards.§r Click the button to claim your reward.')
-        .button2('§aClaim')
-        .button1('§cExit')
-        .show(player)
-        .then(({ selection, canceled }) => {
-            if (canceled || selection === 0) return player.sendMessage('§c<System>§7: You have closed the menu');
-            addItems(player, [rewardItems[Math.floor(Math.random() * rewardItems.length)]])
-            player.playSound('random.levelup');
-            const nextRewardTime = setTimer(24, 'hours');
-            player.sendMessage(`§c<System>:§7 You have received a daily reward. The next reward will be available in §aDays§7: ${getTime(nextRewardTime).days}, §aHours§7: ${getTime(nextRewardTime).hours}, §aMinutes§7: ${getTime(nextRewardTime).minutes}, §aSeconds§7: ${getTime(nextRewardTime).seconds}`);
-            player.setDynamicProperty('rewards', JSON.stringify({ targetDate: nextRewardTime.targetDate }));
-        });
-}
+const CHEST_X = 104, CHEST_Y = 64, CHEST_Z = 200; // Coordinates of the chest
+const COOLDOWN_TIME = 20 * 1000; // 20 seconds in milliseconds
 
-const formatTime = (milliseconds) => ({
-    days: Math.floor(milliseconds / (1000 * 60 * 60 * 24)),
-    hours: Math.floor((milliseconds / (1000 * 60 * 60)) % 24),
-    minutes: Math.floor((milliseconds / (1000 * 60)) % 60),
-    seconds: Math.floor((milliseconds / 1000) % 60),
-});
+const cooldowns = new Map();
 
+world.afterEvents.playerInteractWithBlock.subscribe((event) => {
+    const player = event.player;
+    const block = event.block;
 
-export const getTime = (timerInfo) => {
-    const targetDate = new Date(timerInfo.targetDate);
-    const timeRemaining = targetDate - new Date();
-    return formatTime(timeRemaining);
-};
+    if (block.typeId === "minecraft:chest" &&
+        block.location.x === CHEST_X &&
+        block.location.y === CHEST_Y &&
+        block.location.z === CHEST_Z) {
 
+        const lastUsed = cooldowns.get(player.name) || 0;
+        const currentTime = Date.now();
 
-export const setTimer = (value, unit) => {
-    const targetDate = new Date();
-    const units = { hours: 'Hours', days: 'Date', minutes: 'Minutes', seconds: 'Seconds' };
-    targetDate[`set${units[unit]}`](targetDate[`get${units[unit]}`]() + value);
-    return { value, unit, targetDate };
-};
+        if (currentTime - lastUsed >= COOLDOWN_TIME) {
+            player.runCommand(`give @s diamond 5`)
+                .then(() => {
+                    player.runCommand("playsound random.levelup @s");
+                    player.sendMessage("§aYou received a 5x Diamond Daily Reward!");
+                    player.runCommand(`setblock ${CHEST_X} ${CHEST_Y} ${CHEST_Z} chest replace`);
+                })
+                .catch((error) => {
+                    console.error("Failed to give item:", error);
+                    player.sendMessage("§cError: Could not give you the item!");
+                });
 
-export function hasTimerReachedEnd(targetDate) {
-    if (!(targetDate instanceof Date)) targetDate = new Date(targetDate);
-    const currentDate = new Date();
-    return currentDate > targetDate;
-}
+            cooldowns.set(player.name, currentTime);
+        } else {
+            const timeLeft = Math.ceil((COOLDOWN_TIME - (currentTime - lastUsed)) / 1000);
 
-function addItems(player, items) {
-    system.run(() => {
-        try {
-            const inv = player.getComponent("inventory").container;
-            for (let [item, count, enchants] of items) {
-                const itemStack = new ItemStack(item, count);
-                if (enchants && enchants.length > 0) {
-                    const enchantComp = itemStack.getComponent(
-                        "minecraft:enchantments"
-                    ).enchantments;
-                    for (const enchant of enchants)
-                        enchantComp.addEnchantment(enchant);
-                    itemStack.getComponent("minecraft:enchantments").enchantments =
-                        enchantComp;
-                }
-                inv.addItem(itemStack);
-            }
-        } catch (error) {
-            console.log("inventory", error);
+            player.runCommand("playsound random.break @s");
+            player.sendMessage(`§cYou must wait ${timeLeft} more seconds to use this daily rewards again!`);
         }
-    });
-}
+    }
+});

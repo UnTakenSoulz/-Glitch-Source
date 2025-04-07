@@ -7,14 +7,6 @@ class Commands {
 world.beforeEvents.chatSend.subscribe(data => {
 try {
     const emoji = { // Add list of emojis here
-	// Custom emojis
-        ':mrbbates1:': '',
-        ':coins:': '',
-        ':skull:': '',
-        ':crown:': '',
-        ':Discord:': '',
-
-
 	// Built in emojis
 	':Armor:':'',
 	':Food:':'',

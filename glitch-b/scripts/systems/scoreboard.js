@@ -2,7 +2,7 @@ import { system, world } from "@minecraft/server";
 import { getRank } from "./ranks.js";
 
 // Scoreboard Objectives
-const objectives = {
+export const objectives = {
     money: "Money",
     kills: "Kills",
     deaths: "Deaths",
@@ -14,6 +14,8 @@ const objectives = {
     seconds: "S",
     online: "Online",
 };
+
+export default objectives;
 
 // Maximum money limit (prevents negative money)
 const MONEY_LIMIT = 2_147_483_647;
@@ -198,3 +200,144 @@ system.runInterval(() => {
         player.runCommand(`titleraw @s title ${JSON.stringify(statsJSON)}`);
     });
 }, 1);
+
+
+//
+// Compass Panels
+//
+
+import { ActionFormData, ModalFormData } from "@minecraft/server-ui";
+import main from "../commands/config.js";
+
+world.afterEvents.itemUse.subscribe((event) => {
+    const { itemStack, source } = event;
+
+    if (itemStack.typeId === "glitch:itemui" && source?.typeId === "minecraft:player") {
+        showCompassUI(source);
+        source.playSound("note.pling", { pitch: 1, volume: 0.4 });
+    }
+});
+
+function showCompassUI(player) {
+    const form = new ActionFormData()
+        .title("§l§dGlitch §aPlayer Menu")
+        .body("Choose an option:");
+
+    form.button("Profile", "textures/items/book_portfolio")
+        .button("Spawn", "textures/ui/timer")
+        .button("Shop", "textures/ui/MCoin")
+        .button("TPA", "textures/ui/FriendsIcon")
+        .button("PVP", "textures/ui/sword")
+        .button("Server Info", "textures/ui/mashup_world");
+
+    form.show(player).then((response) => {
+        if (response.canceled) return;
+
+        switch (response.selection) {
+            case 0:
+                ProfileHandle(player);
+                break;
+            case 1:
+                SpawnHandle(player);
+                break;
+            case 2:
+                ShopHandle(player);
+                break;
+            case 3:
+                TPAHandle(player);
+                break;
+            case 4:
+                PVPHandle(player);
+                break;
+            case 5:
+                ServerInfoHandle(player);
+                break;
+        }
+    }).catch((error) => {
+        console.error("§7[§c-§7] §rFailed to show compass panel:§c", error);
+    });
+}
+
+function ProfileHandle(player) {
+    const rank = getRank(player);
+    const money = formatNumber(getScore(player, objectives.money));
+    const kills = getScore(player, objectives.kills);
+    const deaths = getScore(player, objectives.deaths);
+    const killstreak = getScore(player, objectives.killstreak);
+    const kdr = getScore(player, objectives.kdr);
+    const kdrd = getScore(player, objectives.kdrd);
+    const online = getScore(player, objectives.online);
+
+    const form = new ActionFormData()
+        .title("§l§dGlitch")
+        .body(
+            `§f================================\n` +
+            `§l§aPlayer Status:\n\n` +
+            `§l§i|§r §5IGN: §f${player.name}\n` +
+            `§l§i|§r §9Rank: §b${rank}\n` +
+            `§l§i|§r §5Money: §a$${money}\n` +
+            `§l§i|§r §9Kills: §f${kills}\n` +
+            `§l§i|§r §5Deaths: §f${deaths}\n` +
+            `§l§i|§r §9Killstreak: §f${killstreak}\n` +
+            `§l§i|§r §5K/D: §f[${kdr}] [${kdrd}]\n` +
+            `\n\n§f================================`
+        );
+
+    form.button("§cBack", "textures/ui/arrow_left");
+
+    form.show(player).then(response => {
+        if (response.canceled) return;
+
+        switch (response.selection) {
+            case 0:
+                showCompassUI(player);
+                break;
+        }
+    }).catch(error => {
+        console.error("§7[§c-§7] §rFailed to show profile panel:§c", error);
+    });
+}
+
+function SpawnHandle(player) {
+    player.runCommand("tp @s 0 0 0");
+}
+
+function ShopHandle(player) {
+    const form = new ActionFormData()
+        .title("§l§dGlitch §aShopping Menu")
+        .body("Choose an option:");
+
+    form.button("Profile", "textures/items/book_portfolio")
+        .button("Spawn", "textures/ui/timer")
+        .button("Shop", "textures/ui/MCoin")
+        .button("TPA", "textures/ui/FriendsIcon")
+        .button("PVP", "textures/ui/sword")
+        .button("Server Info", "textures/ui/mashup_world");
+        
+    form.show(player).then((response) => {
+        if (response.canceled) return;
+
+        switch (response.selection) {
+            case 0:
+                ProfileHandle(player);
+                break;
+            case 1:
+                SpawnHandle(player);
+                break;
+            case 2:
+                ShopHandle(player);
+                break;
+            case 3:
+                TPAHandle(player);
+                break;
+            case 4:
+                PVPHandle(player);
+                break;
+            case 5:
+                ServerInfoHandle(player);
+                break;
+        }
+    }).catch((error) => {
+        console.error("§7[§c-§7] §rFailed to show compass panel:§c", error);
+    });
+}
