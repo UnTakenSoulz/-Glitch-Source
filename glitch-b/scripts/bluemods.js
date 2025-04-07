@@ -1,24 +1,26 @@
 import { system } from "@minecraft/server";
-const Plugins = ["main.js"]
+const Plugins = ["main.js"];
 
-for (const plugin of Plugins) {
+(async function loadPlugins() {
+    await system.waitTicks(0);
 
-    const start = Date.now();
+    for (const plugin of Plugins) {
+        const start = Date.now();
 
-    import(`./${plugin}`)
-
-        .then(() => {
-            console.warn(
-                `§aLoaded Plugin: §e${plugin}§a Successfully, in §e${Date.now() - start} ms§r`
-        );
-    })
-
-    .catch((error) => {
-        console.warn(
-            `Error on Loading Plugin ${plugin}: ` + error + error.stack);
-    });
-}
+        import(`./${plugin}`)
+            .then(() => {
+                console.warn(
+                    `§aLoaded Plugin: §e${plugin}§a Successfully, in §e${Date.now() - start} ms§r`
+                );
+            })
+            .catch((error) => {
+                console.warn(
+                    `Error on Loading Plugin ${plugin}: ` + error + error.stack
+                );
+            });
+    }
+})();
 
 system.beforeEvents.watchdogTerminate.subscribe(data => {
-    data.cancel = true
-}) 
+    data.cancel = true;
+});

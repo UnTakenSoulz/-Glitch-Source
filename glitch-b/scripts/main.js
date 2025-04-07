@@ -1,15 +1,18 @@
-import "./systems/bowding.js";
-import "./systems/cps.js";
-import "./systems/cranks.js";
+import "./systems/projectTile.js";
 import "./systems/dailyrewards.js";
-import "./systems/emoji.js";
-import "./systems/index.js";
-import "./systems/kill.js";
 import "./systems/scoreboard.js";
 import "./systems/sellpad.js";
+import "./systems/ranks.js";
 import "./systems/starterkit.js";
-import "./systems/playerCompass.js";
+import "./systems/common_crate.js";
+import "./systems/rare_crate.js";
+import "./systems/epic_crate.js";
+import "./systems/legendary_crate.js";
 
-import "./shop/diamondkit.js";
+import "./shop/ndiamond.js";
+import "./shop/niron.js";
 
 import "./commands/main.js";
+
+
+console.log("Main.js Loaded")
