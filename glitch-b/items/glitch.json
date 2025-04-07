@@ -2,17 +2,17 @@
 	"format_version": "1.21.60",
 	"minecraft:item": {
 		"description": {
-			"identifier": "glitch:rare_key",
+			"identifier": "glitch:itemui",
 			"menu_category": {
 				"category": "equipment"
 			}
 		},
 		"components": {
 		    "minecraft:display_name": {
-                "value": "Rare Key"
+                "value": "§dGlitch §7| §aMenu"
             },
-			"minecraft:max_stack_size": 64,
-			"minecraft:icon": "rare_key",
+			"minecraft:max_stack_size": 1,
+			"minecraft:icon": "book_portfolio",
 			"minecraft:glint": true
 		}
 	}
