@@ -1,5 +1,6 @@
 import { system, world } from "@minecraft/server";
 import { getRank } from "./ranks.js";
+import { ShopTestHandle } from "./shop.js";
 
 // Scoreboard Objectives
 export const objectives = {
@@ -218,7 +219,7 @@ world.afterEvents.itemUse.subscribe((event) => {
     }
 });
 
-function showCompassUI(player) {
+export function showCompassUI(player) {
     const form = new ActionFormData()
         .title("§l§dGlitch §0| §aPlayer Menu")
         .body("Choose an option:");
@@ -227,7 +228,11 @@ function showCompassUI(player) {
         .button("Warp Area", "textures/ui/conduit_power_effect")
         .button("TPA", "textures/ui/FriendsIcon")
         .button("Server Info", "textures/ui/mashup_world");
-
+    
+    if (player.hasTag(main.adminTag)) {
+        form.button("Shop Testing", "textures/items/gold_pickaxe");
+    }
+    
     form.show(player).then((response) => {
         if (response.canceled) return;
 
@@ -244,6 +249,9 @@ function showCompassUI(player) {
                 break;
             case 3:
                 ServerInfoHandle(player);
+                break;
+            case 4:
+                ShopTestHandle(player);
                 break;
         }
     }).catch((error) => {
@@ -303,6 +311,7 @@ function WarpHandle(player) {
     form.button("Spawn", "textures/ui/conduit_power_effect")
         .button("Shop", "textures/ui/MCoin")
         .button("Mining Area", "textures/items/diamond_pickaxe")
+        .button("Kit Opener", "textures/items/shulker_top_lime")
         .button("Coming Soon", "textures/ui/missing_item")
         .button("§cBack", "textures/ui/arrow_left");
         
@@ -320,10 +329,14 @@ function WarpHandle(player) {
                 MiningHandle(player);
                 break;
             case 3:
-                WarpHandle(player)
+                WarpHandle(player);
                 player.playSound("random.break", { pitch: 1, volume: 0.4 });
                 break;
             case 4:
+                WarpHandle(player)
+                player.playSound("random.break", { pitch: 1, volume: 0.4 });
+                break;
+            case 5:
                 showCompassUI(player);
                 break;
         }

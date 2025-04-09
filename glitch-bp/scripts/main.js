@@ -9,10 +9,4 @@ import "./systems/rare_crate.js";
 import "./systems/epic_crate.js";
 import "./systems/legendary_crate.js";
 
-import "./shop/ndiamond.js";
-import "./shop/niron.js";
-
 import "./commands/main.js";
-
-
-console.log("Main.js Loaded")
