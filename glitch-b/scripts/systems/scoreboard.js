@@ -214,20 +214,18 @@ world.afterEvents.itemUse.subscribe((event) => {
 
     if (itemStack.typeId === "glitch:itemui" && source?.typeId === "minecraft:player") {
         showCompassUI(source);
-        source.playSound("note.pling", { pitch: 1, volume: 0.4 });
+        source.playSound("note.bell", { pitch: 1, volume: 0.4 });
     }
 });
 
 function showCompassUI(player) {
     const form = new ActionFormData()
-        .title("§l§dGlitch §aPlayer Menu")
+        .title("§l§dGlitch §0| §aPlayer Menu")
         .body("Choose an option:");
 
     form.button("Profile", "textures/items/book_portfolio")
-        .button("Spawn", "textures/ui/timer")
-        .button("Shop", "textures/ui/MCoin")
+        .button("Warp Area", "textures/ui/conduit_power_effect")
         .button("TPA", "textures/ui/FriendsIcon")
-        .button("PVP", "textures/ui/sword")
         .button("Server Info", "textures/ui/mashup_world");
 
     form.show(player).then((response) => {
@@ -238,18 +236,13 @@ function showCompassUI(player) {
                 ProfileHandle(player);
                 break;
             case 1:
-                SpawnHandle(player);
+                WarpHandle(player);
                 break;
             case 2:
-                ShopHandle(player);
+                PVPHandle(player);
+                player.playSound("random.break", { pitch: 1, volume: 0.4 });
                 break;
             case 3:
-                TPAHandle(player);
-                break;
-            case 4:
-                PVPHandle(player);
-                break;
-            case 5:
                 ServerInfoHandle(player);
                 break;
         }
@@ -269,7 +262,7 @@ function ProfileHandle(player) {
     const online = getScore(player, objectives.online);
 
     const form = new ActionFormData()
-        .title("§l§dGlitch")
+        .title("§l§dGlitch §0| §aStatistics")
         .body(
             `§f================================\n` +
             `§l§aPlayer Status:\n\n` +
@@ -298,46 +291,144 @@ function ProfileHandle(player) {
     });
 }
 
-function SpawnHandle(player) {
-    player.runCommand("tp @s 0 0 0");
-}
+//
+// Warp Handling Systems
+//
 
-function ShopHandle(player) {
+function WarpHandle(player) {
     const form = new ActionFormData()
-        .title("§l§dGlitch §aShopping Menu")
+        .title("§l§dGlitch §0| §aWarps Menu")
         .body("Choose an option:");
 
-    form.button("Profile", "textures/items/book_portfolio")
-        .button("Spawn", "textures/ui/timer")
+    form.button("Spawn", "textures/ui/conduit_power_effect")
         .button("Shop", "textures/ui/MCoin")
-        .button("TPA", "textures/ui/FriendsIcon")
-        .button("PVP", "textures/ui/sword")
-        .button("Server Info", "textures/ui/mashup_world");
+        .button("Mining Area", "textures/items/diamond_pickaxe")
+        .button("Coming Soon", "textures/ui/missing_item")
+        .button("§cBack", "textures/ui/arrow_left");
         
     form.show(player).then((response) => {
         if (response.canceled) return;
 
         switch (response.selection) {
             case 0:
-                ProfileHandle(player);
-                break;
-            case 1:
                 SpawnHandle(player);
                 break;
-            case 2:
+            case 1:
                 ShopHandle(player);
                 break;
+            case 2:
+                MiningHandle(player);
+                break;
             case 3:
-                TPAHandle(player);
+                WarpHandle(player)
+                player.playSound("random.break", { pitch: 1, volume: 0.4 });
                 break;
             case 4:
-                PVPHandle(player);
-                break;
-            case 5:
-                ServerInfoHandle(player);
+                showCompassUI(player);
                 break;
         }
     }).catch((error) => {
-        console.error("§7[§c-§7] §rFailed to show compass panel:§c", error);
+        console.error("§7[§c-§7] §rFailed to show warp panel:§c", error);
     });
+}
+
+function SpawnHandle(player) {
+    const startPos = player.location;
+    let countdown = 5;
+
+    const id = system.runInterval(() => {
+        const currentPos = player.location;
+
+        if (
+            Math.floor(currentPos.x) !== Math.floor(startPos.x) ||
+            Math.floor(currentPos.y) !== Math.floor(startPos.y) ||
+            Math.floor(currentPos.z) !== Math.floor(startPos.z)
+        ) {
+            player.sendMessage("§cTeleport cancelled because you moved.");
+            player.playSound("random.break", { pitch: 1, volume: 0.4 });
+            system.clearRun(id);
+            return;
+        }
+
+        if (countdown > 0) {
+            player.sendMessage(`§aTeleporting in §e${countdown}§a...`);
+            player.playSound("note.pling", { pitch: 1, volume: 0.4 });
+            countdown--;
+        } else {
+            player.runCommand("tp @s 0 100 0"); 
+            player.sendMessage("§aSuccesfully teleported to Spawn");
+            player.playSound("random.levelup", { pitch: 1, volume: 0.4 });
+            system.clearRun(id);
+        }
+    }, 20); 
+}
+
+function ShopHandle(player) {
+    const startPos = player.location;
+    let countdown = 5;
+
+    const id = system.runInterval(() => {
+        const currentPos = player.location;
+
+        if (
+            Math.floor(currentPos.x) !== Math.floor(startPos.x) ||
+            Math.floor(currentPos.y) !== Math.floor(startPos.y) ||
+            Math.floor(currentPos.z) !== Math.floor(startPos.z)
+        ) {
+            player.sendMessage("§cTeleport cancelled because you moved.");
+            player.playSound("random.break", { pitch: 1, volume: 0.4 });
+            system.clearRun(id);
+            return;
+        }
+
+        if (countdown > 0) {
+            player.sendMessage(`§aTeleporting in §e${countdown}§a...`);
+            player.playSound("note.pling", { pitch: 1, volume: 0.4 });
+            countdown--;
+        } else {
+            player.runCommand("tp @s 0 100 0"); 
+            player.sendMessage("§aSuccesfully teleported to Shop");
+            player.playSound("random.levelup", { pitch: 1, volume: 0.4 });
+            system.clearRun(id);
+        }
+    }, 20);
+}
+
+function MiningHandle(player) {
+    const startPos = player.location;
+    let countdown = 5;
+
+    const radius = 25;
+    const center = { x: -16.67, y: -52.00, z: -489.06 };
+
+    const id = system.runInterval(() => {
+        const currentPos = player.location;
+
+        if (
+            Math.floor(currentPos.x) !== Math.floor(startPos.x) ||
+            Math.floor(currentPos.y) !== Math.floor(startPos.y) ||
+            Math.floor(currentPos.z) !== Math.floor(startPos.z)
+        ) {
+            player.sendMessage("§cTeleport cancelled because you moved.");
+            player.playSound("random.break", { pitch: 1, volume: 0.4 });
+            system.clearRun(id);
+            return;
+        }
+
+        if (countdown > 0) {
+            player.sendMessage(`§aTeleporting in §e${countdown}§a...`);
+            player.playSound("note.pling", { pitch: 1, volume: 0.4 });
+            countdown--;
+        } else {
+            const offsetX = Math.floor(Math.random() * (radius * 2 + 1)) - radius;
+            const offsetZ = Math.floor(Math.random() * (radius * 2 + 1)) - radius;
+            const finalX = center.x + offsetX;
+            const finalZ = center.z + offsetZ;
+
+            player.runCommand(`tp @s ${finalX.toFixed(2)} ${center.y} ${finalZ.toFixed(2)}`);
+            player.sendMessage("§aSuccessfully teleported to the Mining Area!");
+            player.playSound("random.levelup", { pitch: 1, volume: 0.4 });
+            system.clearRun(id);
+        }
+    }, 20);
 }
